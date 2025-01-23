@@ -132,11 +132,9 @@ spec:
     spec:
       containers:
         - name: habytee
-          image: habytee/habytee:latest
+          image: habytee/client:latest
           ports:
             - containerPort: 80
-      imagePullSecrets:
-        - name: regcred
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -155,7 +153,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: habytee/api:latest
+          image: habytee/server:latest
           ports:
             - containerPort: 80
           env:
