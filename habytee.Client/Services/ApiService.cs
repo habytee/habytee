@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace habytee.Client.Services;
 
-public class ApiService
+public class ApiService : IApiService
 {
     private readonly HttpClient httpClient;
     public ApiService(HttpClient httpClient)
