@@ -9,7 +9,6 @@ public partial class Home
 {
     private HomeRazorViewModel? homeRazorViewModel;
     private RadzenChart? chart;
-    bool showDataLabels = false;
 
 	[Inject]
 	private ApiService? apiService {  get; set; }
