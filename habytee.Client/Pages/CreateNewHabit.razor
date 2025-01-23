@@ -1,0 +1,134 @@
+@page "/create"
+@using habytee.Interconnection.Models
+@using habytee.Interconnection.Validator
+@using habytee.Client.Services
+@using System
+
+@inject NavigationManager Navigation
+@inject ApiService ApiService
+
+<PageTitle>Create new habit</PageTitle>
+
+<h1 class="test">Create new habit</h1>
+<RadzenTabs @bind-SelectedIndex="@addHabitViewModel!.SelectedIndex">
+    <Tabs>
+        <RadzenTabsItem Text="Name">
+            <RadzenCard>
+                <RadzenTemplateForm TItem="ViewModels.AddHabitNameViewModel" Data="@addHabitViewModel.AddHabitNameViewModel" @ref="addHabitNameViewModelForm">
+                    <DataAnnotationsValidator />
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Habit name</RadzenText>
+                    <RadzenTextBox Name="Name" @bind-value="@addHabitViewModel.AddHabitNameViewModel.Name" Style="width: 100%" aria-label="Habity name" Placeholder="Name..." />
+                    <ValidationMessage For="@(() => @addHabitViewModel.AddHabitNameViewModel.Name)" />
+                    <div class="buttons">
+                        <RadzenButton Text="Back" Click="@(() => addHabitViewModel.Back.Execute(null))" Disabled="@addHabitViewModel.Back.CanExecute(null)" />
+                        <RadzenButton ButtonType="ButtonType.Submit"  Click="@(() => addHabitViewModel.Next.Execute(null))" Text="Next" Disabled="@addHabitViewModel.Next.CanExecute(null)" />
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Why?" Disabled="@(!addHabitViewModel.AddHabitNameViewModel.IsValid)">
+            <RadzenCard>
+                <RadzenTemplateForm TItem="ViewModels.AddHabitReasonViewModel" Data="@addHabitViewModel.AddHabitReasonViewModel" @ref="addHabitReasonViewModelForm">
+                    <DataAnnotationsValidator />
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Reason why you need this habit</RadzenText>
+                    <RadzenTextArea @bind-value="@addHabitViewModel.AddHabitReasonViewModel.Reason" Placeholder="Enter here..." Style="width: 100%" aria-label="Reason why you need this habit" />
+                    <ValidationMessage For="@(() => @addHabitViewModel.AddHabitReasonViewModel.Reason)" />
+                    <div class="buttons">
+                        <RadzenButton Text="Back" Click="@(() => addHabitViewModel.Back.Execute(null))" Disabled="@addHabitViewModel.Back.CanExecute(null)" />
+                        <RadzenButton ButtonType="ButtonType.Submit"  Click="@(() => addHabitViewModel.Next.Execute(null))" Text="Next" Disabled="@addHabitViewModel.Next.CanExecute(null)" />
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Days" Disabled="@(!(addHabitViewModel.AddHabitNameViewModel.IsValid && addHabitViewModel.AddHabitReasonViewModel.IsValid))">
+            <RadzenTemplateForm TItem="ViewModels.AddHabitDaysViewModel" Data="@addHabitViewModel.AddHabitDaysViewModel" @ref="addHabitDaysViewModelForm">
+                <RadzenCard>
+                    <DataAnnotationsValidator />
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Use A/B weeks</RadzenText>
+                        <RadzenSwitch @bind-Value="@addHabitViewModel.AddHabitDaysViewModel.ABActivated" Name="ABSwitch" style="outline: none !important" />
+                    </RadzenCard>
+                    <RadzenCard>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Weekdays@(addHabitViewModel.AddHabitDaysViewModel.ABActivated ? " A" : string.Empty)</RadzenText>
+                        <RadzenCheckBoxList @bind-Value="@addHabitViewModel.AddHabitDaysViewModel.AWeek" TValue="DayOfWeek" style="outline: none !important">
+                            <Items>
+                                <RadzenCheckBoxListItem Text="Monday" Value="@DayOfWeek.Monday" />
+                                <RadzenCheckBoxListItem Text="Tuesday" Value="@DayOfWeek.Tuesday" />
+                                <RadzenCheckBoxListItem Text="Wednesday" Value="@DayOfWeek.Wednesday" />
+                                <RadzenCheckBoxListItem Text="Thursday" Value="@DayOfWeek.Thursday" />
+                                <RadzenCheckBoxListItem Text="Friday" Value="@DayOfWeek.Friday" />
+                                <RadzenCheckBoxListItem Text="Saturday" Value="@DayOfWeek.Saturday" />
+                                <RadzenCheckBoxListItem Text="Sunday" Value="@DayOfWeek.Sunday" />
+                            </Items>
+                        </RadzenCheckBoxList>
+                    </RadzenCard>
+
+                    <RadzenCard class="@(addHabitViewModel.AddHabitDaysViewModel.ABActivated ? "rz-display-block" : "rz-display-none")">
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Weekdays B</RadzenText>
+                        <RadzenCheckBoxList @bind-Value="@addHabitViewModel.AddHabitDaysViewModel.BWeek" TValue="DayOfWeek" style="outline: none !important">
+                            <Items>
+                                <RadzenCheckBoxListItem Text="Monday" Value="@DayOfWeek.Monday" />
+                                <RadzenCheckBoxListItem Text="Tuesday" Value="@DayOfWeek.Tuesday" />
+                                <RadzenCheckBoxListItem Text="Wednesday" Value="@DayOfWeek.Wednesday" />
+                                <RadzenCheckBoxListItem Text="Thursday" Value="@DayOfWeek.Thursday" />
+                                <RadzenCheckBoxListItem Text="Friday" Value="@DayOfWeek.Friday" />
+                                <RadzenCheckBoxListItem Text="Saturday" Value="@DayOfWeek.Saturday" />
+                                <RadzenCheckBoxListItem Text="Sunday" Value="@DayOfWeek.Sunday" />
+                            </Items>
+                        </RadzenCheckBoxList>
+                    </RadzenCard>
+                    <RadzenCustomValidator Component="ABSwitch" Validator="@(() => habytee.Interconnection.Validator.Validate.HabitAB(addHabitViewModel.AddHabitDaysViewModel.ABActivated, addHabitViewModel.AddHabitDaysViewModel.AWeek, addHabitViewModel.AddHabitDaysViewModel.BWeek))" Text="At least one day must be selected" />
+                    <RadzenText class="@(addHabitViewModel.CurrentWeekAWeek && addHabitViewModel.AddHabitDaysViewModel.ABActivated ? "rz-display-block" : "rz-display-none")">Info: Current week is an A week</RadzenText>
+                    <RadzenText class="@(!addHabitViewModel.CurrentWeekAWeek && addHabitViewModel.AddHabitDaysViewModel.ABActivated ? "rz-display-block" : "rz-display-none")">Info: Current week is an B week</RadzenText>
+                    <div class="buttons">
+                        <RadzenButton Text="Back" Click="@(() => addHabitViewModel.Back.Execute(null))" Disabled="@addHabitViewModel.Back.CanExecute(null)" />
+                        <RadzenButton ButtonType="ButtonType.Submit"  Click="@(() => addHabitViewModel.Next.Execute(null))" Text="Next" Disabled="@addHabitViewModel.Next.CanExecute(null)" />
+                    </div>
+                </RadzenCard>
+            </RadzenTemplateForm>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Alarm" Disabled="@(!(addHabitViewModel.AddHabitNameViewModel.IsValid && addHabitViewModel.AddHabitReasonViewModel.IsValid && addHabitViewModel.AddHabitDaysViewModel.IsValid))">
+            <RadzenCard>
+                <RadzenTemplateForm TItem="ViewModels.AddHabitAlarmViewModel" Data="@addHabitViewModel.AddHabitAlarmViewModel" @ref="addHabitAlarmViewModelForm">
+                    <DataAnnotationsValidator />
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Set Alarm</RadzenText>
+                    <RadzenSwitch @bind-Value="@addHabitViewModel.AddHabitAlarmViewModel.SetAlarm" Name="SetAlarm" style="outline: none !important" />
+                    <div class="@(addHabitViewModel.AddHabitAlarmViewModel.SetAlarm ? "rz-display-block" : "rz-display-none")">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-p-12">
+                            <RadzenLabel Text="Select Time" Component="DatePickerTimeOnly" />
+                            <RadzenDatePicker @bind-Value="@addHabitViewModel.AddHabitAlarmViewModel.AlarmTime" ShowTime="true" TimeOnly="true" DateFormat="HH:mm" Name="DatePickerTimeOnly" />
+                        </RadzenStack>
+                    </div>
+                    <RadzenCustomValidator Component="DatePickerTimeOnly" Validator="@(() => habytee.Interconnection.Validator.Validate.HabitAlarm(addHabitViewModel.AddHabitAlarmViewModel.SetAlarm, addHabitViewModel.AddHabitAlarmViewModel.AlarmTime))" Text="Please select a valid time" />
+                    <div class="buttons">
+                        <RadzenButton Text="Back" Click="@(() => addHabitViewModel.Back.Execute(null))" Disabled="@addHabitViewModel.Back.CanExecute(null)" />
+                        <RadzenButton ButtonType="ButtonType.Submit"  Click="@(() => addHabitViewModel.Next.Execute(null))" Text="Next" Disabled="@addHabitViewModel.Next.CanExecute(null)" />
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Earn" Disabled="@(!(addHabitViewModel.AddHabitNameViewModel.IsValid && addHabitViewModel.AddHabitReasonViewModel.IsValid && addHabitViewModel.AddHabitDaysViewModel.IsValid && addHabitViewModel.AddHabitAlarmViewModel.IsValid))">
+            <RadzenCard>
+                <RadzenTemplateForm TItem="ViewModels.AddHabitEarningsViewModel" Data="@addHabitViewModel.AddHabitEarningsViewModel" @ref="addHabitEarningsViewModelForm">
+                    <DataAnnotationsValidator />
+                    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Earnings</RadzenText>
+                    <RadzenChart>
+                        <RadzenLineSeries Smooth="true" Data="@addHabitViewModel.AddHabitEarningsViewModel.Fibonaccis" CategoryProperty="Position" Title="Values" ValueProperty="Value">
+                        </RadzenLineSeries>
+                        <RadzenLineSeries Smooth="true" Data="@addHabitViewModel.AddHabitEarningsViewModel.Selected" CategoryProperty="Position" Title="Selected" ValueProperty="Value">
+                            <RadzenMarkers Visible="true" MarkerType="MarkerType.Circle" Size="5" />
+                        </RadzenLineSeries>
+                        <RadzenLegend Visible="false" />
+                    </RadzenChart>
+                    <RadzenColumn Size="6" class="rz-p-5">
+                        <RadzenSlider @bind-Value="@addHabitViewModel.AddHabitEarningsViewModel.Earnings" TValue="int" Min="0" Max="6" Step="1" style="width: 100%;" />
+                    </RadzenColumn>
+                    <div class="buttons">
+                        <RadzenButton Text="Back" Click="@(() => addHabitViewModel.Back.Execute(null))" Disabled="@addHabitViewModel.Back.CanExecute(null)" />
+                        <RadzenButton ButtonType="ButtonType.Submit"  Click="@(() => addHabitViewModel.Next.Execute(null))" Text="Finish" Disabled="@addHabitViewModel.Next.CanExecute(null)" />
+                    </div>
+                </RadzenTemplateForm>
+            </RadzenCard>
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>

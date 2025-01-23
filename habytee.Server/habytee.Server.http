@@ -1,0 +1,6 @@
+@habytee.Server_HostAddress = http://localhost:5087
+
+GET {{habytee.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

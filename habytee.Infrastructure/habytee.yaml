@@ -1,0 +1,411 @@
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+handler: runsc
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-dns
+  namespace: cert-manager
+type: Opaque
+data:
+  cloudflare-apikey: ${ CLOUDFLARE_API_TOKEN_INNER } 
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: eric@gmx.net
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - dns01:
+        cloudflare:
+          email: ericmc@outlook.de
+          apiTokenSecretRef:
+            name: cloudflare-dns
+            key: cloudflare-apikey
+      selector:
+        dnsNames:
+        - "${ DOMAIN }"
+        - "*.${ DOMAIN }"
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+data:
+  ssl-ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305"
+  ssl-protocols: "TLSv1.3"
+  ssl-ecdh-curve: "X25519"
+  allow-snippet-annotations: "true"
+  enable-brotli: "true"
+  brotli-level: "6"
+  brotli-types: "text/html text/xml image/svg+xml application/x-font-ttf image/vnd.microsoft.icon application/x-font-opentype application/json font/eot application/vnd.ms-fontobject application/javascript font/otf application/xml application/xhtml+xml text/javascript application/x-javascript text/plain application/x-font-truetype application/xml+rss image/x-icon font/opentype text/css image/x-win-bitmap"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ${ DOMAIN }
+  namespace: default
+spec:
+  secretName: ${ DOMAIN }
+  privateKey:
+    algorithm: RSA
+    size: 4096
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+    - "${ DOMAIN }"
+    - "*.${ DOMAIN }"
+  commonName: ${ DOMAIN }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: habytee-pvc
+  namespace: default
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce        
+  resources:              
+    requests:
+      storage: 15Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: landingpage
+  name: landingpage
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: landingpage
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: landingpage
+    spec:
+      runtimeClassName: gvisor
+      containers:
+      - name: landingpage
+        image: habytee/landingpage:latest
+        imagePullPolicy: Always
+        env:
+        - name: APP_DOMAIN
+          value: ${ APP_DOMAIN }
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+      restartPolicy: Always
+      serviceAccountName: ""
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: habytee
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: habytee
+  template:
+    metadata:
+      labels:
+        app: habytee
+    spec:
+      containers:
+        - name: habytee
+          image: habytee/habytee:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: habytee/api:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: POSTGRES_MASTER_PASSWORD
+              value: ${ POSTGRES_PASSWORD }
+            - name: POSTGRES_MASTER_USERNAME
+              value: "postgres"
+            - name: POSTGRES_MASTER_DATABASE
+              value: "citus_db"
+            - name: POSTGRES_MASTER_HOST
+              value: "citus-master"
+            - name: POSTGRES_MASTER_PORT
+              value: "5432"
+            - name: POSTGRES_WORKER_PASSWORD
+              value: ${ POSTGRES_PASSWORD }
+            - name: POSTGRES_WORKER_USERNAME
+              value: "postgres"
+            - name: POSTGRES_WORKER_DATABASE
+              value: "citus_db"
+            - name: POSTGRES_WORKER_HOST
+              value: "citus-workers"
+            - name: POSTGRES_WORKER_PORT
+              value: "5432"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: default
+  labels:
+    app: api
+spec:
+  selector:
+    app: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy
+    spec:
+      containers:
+      - name: oauth2-proxy
+        image: quay.io/oauth2-proxy/oauth2-proxy:latest
+        ports:
+        - containerPort: 4180
+        args:
+        - --provider=github
+        - --client-id=${ GITHUB_CLIENT_ID }
+        - --client-secret=${ GITHUB_CLIENT_SECRET }
+        - --cookie-secure=true
+        - --cookie-secret=${ COOKIE_SECRET }
+        - --email-domain=*
+        - --upstream=http://habytee:80
+        - --upstream=http://api:80/api/
+        - --redirect-url=https://${ APP_DOMAIN }/oauth2/callback
+        - --http-address=0.0.0.0:4180
+        - --cookie-name=_oauth2_proxy
+        - --cookie-samesite=lax
+        - --whitelist-domain=${ DOMAIN }
+        - --skip-provider-button
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy
+  namespace: default
+  labels:
+    app: oauth2-proxy
+spec:
+  selector:
+    app: oauth2-proxy
+  ports:
+    - protocol: TCP
+      port: 4180
+      targetPort: 4180
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: landingpage
+  namespace: default
+  labels:
+    app: landingpage
+spec:
+  selector:
+    app: landingpage
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: habytee
+  namespace: default
+  labels:
+    app: habytee
+spec:
+  selector:
+    app: habytee
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: ${ APP_DOMAIN }
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 4180
+  tls:
+    - hosts:
+        - "${ APP_DOMAIN }"
+      secretName: ${ DOMAIN }
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: landingpage-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: ${ DOMAIN }
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: landingpage
+            port:
+              number: 80
+  tls:
+    - hosts:
+        - "${ DOMAIN }"
+      secretName: ${ DOMAIN }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citus-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citus
+      role: master
+  template:
+    metadata:
+      labels:
+        app: citus
+        om.citusdata.role: Master
+    spec:
+      containers:
+        - name: citus
+          image: citusdata/citus:alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              value: ${ POSTGRES_PASSWORD }
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_DB
+              value: "citus_db"
+          ports:
+            - containerPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citus-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: citus
+      com.citusdata.role: Worker
+  template:
+    metadata:
+      labels:
+        app: citus
+        role: worker
+    spec:
+      containers:
+        - name: citus
+          image: citusdata/citus:alpine
+          env:
+            - name: POSTGRES_PASSWORD
+              value: ${ POSTGRES_PASSWORD }
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_DB
+              value: "citus_db"
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: citus-master
+spec:
+  selector:
+    app: citus
+    role: master
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: citus-workers
+spec:
+  selector:
+    app: citus
+    role: worker
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

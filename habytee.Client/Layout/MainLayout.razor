@@ -1,0 +1,31 @@
+@inherits LayoutComponentBase
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+            <RadzenLabel Text="HabyTee" />
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
+            <RadzenPanelMenuItem Text="Add habit" Icon="add_box" Path="/create" />
+            <RadzenPanelMenuItem Text="Logout" Icon="logout" Path="https://app.habytee.com/oauth2/sign_out?rd=https%3A%2F%2Fhabytee.com" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        <div class="rz-p-4">
+            @Body
+        </div>
+    </RadzenBody>
+    <RadzenFooter>
+        &copy; 2025 habytee
+    </RadzenFooter>
+</RadzenLayout>
+
+<HeadContent>
+    <RadzenTheme Theme="material-dark" />
+</HeadContent>
+
+<RadzenComponents />

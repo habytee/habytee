@@ -1,0 +1,27 @@
+.rz-steps {
+    max-width: 100%;
+
+}
+
+.rz-steps-title {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .rz-steps-title {
+        display: none; /* Hide inactive steps */
+    }
+}
+
+ul[role=tablist] {
+    flex-wrap: wrap;
+}
+
+.buttons {
+    margin-top: 20px;
+    margin-right: 30px;
+}
+
+.rz-switch, .rz-checkbox-list-horizontal {
+    outline: none !important;
+}
