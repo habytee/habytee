@@ -6,7 +6,7 @@
 <RadzenCard>
     <RadzenRow class="rz-text-align-center" Gap="1rem">
         <!-- Yesterday Column -->
-        <RadzenColumn Size="4">
+        <RadzenColumn Size="12" SizeMD="4" SizeLG="4" SizeSM="12">
             <h3>Yesterday</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.YesterdayTasks" TItem="HabitCheckable">
                 <Columns>
@@ -21,7 +21,7 @@
         </RadzenColumn>
 
         <!-- Today Column -->
-        <RadzenColumn Size="4">
+        <RadzenColumn Size="12" SizeMD="4" SizeLG="4" SizeSM="12">
             <h3>Today</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.TodayTasks" TItem="HabitCheckable">
                 <Columns>
@@ -37,7 +37,7 @@
         </RadzenColumn>
 
         <!-- Tomorrow Column -->
-        <RadzenColumn Size="4">
+        <RadzenColumn Size="12" SizeMD="4" SizeLG="4" SizeSM="12">
             <h3>Tomorrow</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.TomorrowTasks" TItem="HabitCheckable">
                 <Columns>
@@ -54,15 +54,15 @@
     <RadzenColumn Size="12">
         <h4>Task Completion Statistics</h4>
         <RadzenChart @ref="chart">
-            <RadzenColumnSeries Data="@(homeRazorViewModel?.DayStatistics.ToList())" CategoryProperty="Weekday" Title="last 2 weeks" LineType="LineType.Dashed" ValueProperty="CompletionPercentage">
-            <RadzenSeriesDataLabels Visible="false" /></RadzenColumnSeries>
-            <RadzenColumnOptions Radius="5" />
+            <RadzenAreaSeries Smooth="false" Data="@(homeRazorViewModel?.DayStatistics.ToList())" CategoryProperty="Weekday" Title="last 2 weeks" LineType="LineType.Dashed" ValueProperty="CompletionPercentage">
+                <RadzenSeriesDataLabels Visible="false" />
+            </RadzenAreaSeries>
             <RadzenCategoryAxis Visible="false" />
             <RadzenValueAxis Min="0" Max="100">
                 <RadzenGridLines Visible="true" />
                 <RadzenAxisTitle Text="Tasks completed" />
             </RadzenValueAxis>
+            <RadzenLegend Visible="false" />
         </RadzenChart>
     </RadzenColumn>
 </RadzenCard>
-
