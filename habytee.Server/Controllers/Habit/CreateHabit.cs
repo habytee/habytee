@@ -9,6 +9,11 @@ namespace habytee.Server.Controllers
 		[HttpPost]
 		public IActionResult CreateHabit([FromBody] Habit habit)
 		{
+			if(CurrentUser.Habits.Count >= 300)
+			{
+				return BadRequest("User already has 300 habits");
+			}
+
             if(habit.Alarm != null)
             {
                 habit.Alarm = DateTime.SpecifyKind(habit.Alarm.Value, DateTimeKind.Utc);

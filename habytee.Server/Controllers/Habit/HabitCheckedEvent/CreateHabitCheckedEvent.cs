@@ -12,6 +12,14 @@ namespace habytee.Server.Controllers
         [ServiceFilter(typeof(HabitBelongsToUserFilter))]
 		public IActionResult CreateHabitCheckedEvent(int habitId, HabitCheckedEvent habitCheckedEvent)
 		{
+            if(CurrentHabit!.HabitCheckedEvents.Count >= 29)
+            {
+                WriteDbContext.Habits.Remove(CurrentHabit);
+                WriteDbContext.SaveChanges();
+
+                return Ok(new { message = "You learned a new habit!" });
+            }
+
             CurrentHabit!.HabitCheckedEvents.Add(new HabitCheckedEvent{
                 TimeStamp = DateTime.UtcNow
             });

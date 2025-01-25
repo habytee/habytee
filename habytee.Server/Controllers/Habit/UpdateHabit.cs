@@ -18,7 +18,6 @@ namespace habytee.Server.Controllers
 			CurrentHabit!.BWeekDays = habit.BWeekDays;
 			CurrentHabit!.Alarm = habit.Alarm;
 			CurrentHabit!.Earnings = habit.Earnings;
-
 			WriteDbContext.SaveChanges();
 
 			return Ok(new { message = "Habit updated successfully" });
