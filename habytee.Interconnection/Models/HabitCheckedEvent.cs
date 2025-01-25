@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace habytee.Interconnection.Models;
@@ -5,7 +6,7 @@ public class HabitCheckedEvent
 {
 	public int Id { get; set; }
 
-	[JsonIgnore]
+	[Required]
 	public int HabitId { get; set; }
 
 	[JsonIgnore]

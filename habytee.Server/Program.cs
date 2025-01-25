@@ -1,11 +1,9 @@
-using habytee.Interconnection.Models;
 using habytee.Server.DataAccess;
+using habytee.Server.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
@@ -20,6 +18,9 @@ builder.Services.AddDbContext<ReadDbContext>(options =>
 builder.Services.AddDbContext<WriteDbContext>(options =>
     options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_MASTER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_MASTER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_MASTER_DATABASE")}")
 );
+
+builder.Services.AddScoped<UserAuthenticationFilter>();
+builder.Services.AddScoped<HabitBelongsToUserFilter>();
 
 var app = builder.Build();
 
@@ -37,7 +38,6 @@ using (var scope = app.Services.CreateScope())
 
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -45,6 +45,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-//app.UseHttpsRedirection();
 
 app.Run();
