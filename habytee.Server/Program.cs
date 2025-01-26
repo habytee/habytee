@@ -12,11 +12,15 @@ builder.Services.AddScoped<DataService>();
 builder.Services.AddDbContext<ReadDbContext>(options =>
     //options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_WORKER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_WORKER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_WORKER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_WORKER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_WORKER_DATABASE")}")
     //same for read and write right now.
-    options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_MASTER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_MASTER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_MASTER_DATABASE")}")
+    options
+    .UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_MASTER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_MASTER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_MASTER_DATABASE")}")
+    .EnableSensitiveDataLogging(false)
 );
 
 builder.Services.AddDbContext<WriteDbContext>(options =>
-    options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_MASTER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_MASTER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_MASTER_DATABASE")}")
+    options
+    .UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_MASTER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_MASTER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_MASTER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_MASTER_DATABASE")}")
+    .EnableSensitiveDataLogging(false)
 );
 
 builder.Services.AddScoped<UserAuthenticationFilter>();
