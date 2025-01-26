@@ -144,7 +144,6 @@ code {
   border: 2px double ;
   box-sizing: border-box;
   box-shadow:  1px 1px 1px 0.5px rgba(0, 0, 0, .1);
-  animation: coin-flip 4s cubic-bezier(0, 0.2, 0.8, 1) 2s;
   }
 
 @keyframes coin-flip {

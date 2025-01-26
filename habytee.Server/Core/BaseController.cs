@@ -12,5 +12,5 @@ public abstract class BaseController : ControllerBase
     protected Habit? CurrentHabit => (Habit?)HttpContext.Items["CurrentHabit"];
     protected WriteDbContext WriteDbContext => (WriteDbContext)HttpContext.RequestServices.GetService(typeof(WriteDbContext))!;
     protected ReadDbContext ReadDbContext => (ReadDbContext)HttpContext.RequestServices.GetService(typeof(ReadDbContext))!;
-    protected DataService DataService => (DataService)HttpContext.RequestServices.GetService(typeof(DataService))!;
+    protected GetUserService DataService => (GetUserService)HttpContext.RequestServices.GetService(typeof(GetUserService))!;
 }

@@ -1,6 +1,6 @@
 using habytee.Server.Core;
-using habytee.Server.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace habytee.Server.Controllers
 {
@@ -9,7 +9,7 @@ namespace habytee.Server.Controllers
 		[HttpGet]
 		public IActionResult GetAllHabits()
 		{
-			var habits = ReadDbContext.Habits.Where(h => h.UserId == CurrentUser.Id).ToList();
+			var habits = ReadDbContext.Habits.Where(h => h.UserId == CurrentUser.Id).Include(h => h.HabitCheckedEvents).ToList();
 
 			return Ok(habits);
 		}

@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 public class UserAuthenticationFilter : IAsyncActionFilter
 {
-    private readonly DataService dataService;
+    private readonly IGetUserService getUserService;
 
-    public UserAuthenticationFilter(DataService dataService)
+    public UserAuthenticationFilter(IGetUserService getUserService)
     {
-        this.dataService = dataService;
+        this.getUserService = getUserService;
     }
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -22,7 +22,7 @@ public class UserAuthenticationFilter : IAsyncActionFilter
             return;
         }
 
-        var user = dataService.GetReadUser(email);
+        var user = getUserService.GetReadUser(email);
         context.HttpContext.Items["CurrentUser"] = user;
 
         await next();

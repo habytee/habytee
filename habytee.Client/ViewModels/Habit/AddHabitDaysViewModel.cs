@@ -1,7 +1,3 @@
-using System;
-using habytee.Interconnection.Models;
-using habytee.Interconnection.Validator;
-
 namespace habytee.Client.ViewModels;
 
 public class AddHabitDaysViewModel : BaseViewModel

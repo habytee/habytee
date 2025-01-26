@@ -18,8 +18,8 @@ public class HabitBelongsToUserFilter : IAsyncActionFilter
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var habitId = context.ActionArguments.Values
-            .FirstOrDefault(v => v is int id && context.ActionDescriptor.Parameters
-                .Any(p => p.Name == "id" && p.ParameterType == typeof(int))) as int?;
+            .FirstOrDefault(v => v is int habitId && context.ActionDescriptor.Parameters
+                .Any(p => p.Name == "habitId" && p.ParameterType == typeof(int))) as int?;
 
         if (habitId.HasValue)
         {

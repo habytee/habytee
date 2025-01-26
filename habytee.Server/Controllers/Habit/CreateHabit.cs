@@ -1,40 +1,41 @@
 using Microsoft.AspNetCore.Mvc;
 using habytee.Interconnection.Models;
 using habytee.Server.Core;
+using Habytee.Interconnection.Dto;
 
 namespace habytee.Server.Controllers
 {
 	public partial class HabitController : BaseController
 	{
 		[HttpPost]
-		public IActionResult CreateHabit([FromBody] Habit habit)
+		public IActionResult CreateHabit([FromBody] CreateHabitDto habitDto)
 		{
 			if(CurrentUser.Habits.Count >= 300)
 			{
 				return BadRequest("User already has 300 habits");
 			}
 
-            if(habit.Alarm != null)
+            if(habitDto.Alarm != null)
             {
-                habit.Alarm = DateTime.SpecifyKind(habit.Alarm.Value, DateTimeKind.Utc);
+                habitDto.Alarm = DateTime.SpecifyKind(habitDto.Alarm.Value, DateTimeKind.Utc);
             }
 
 			var newHabit = new Habit
 			{
-				Name = habit.Name,
-				Reason = habit.Reason,
-				ABBoth = habit.ABBoth,
-				AWeekDays = habit.AWeekDays,
-				BWeekDays = habit.BWeekDays,
-				Alarm = habit.Alarm,
-				Earnings = habit.Earnings,
+				Name = habitDto.Name,
+				Reason = habitDto.Reason,
+				ABBoth = habitDto.ABBoth,
+				AWeekDays = habitDto.AWeekDays,
+				BWeekDays = habitDto.BWeekDays,
+				Alarm = habitDto.Alarm,
+				Earnings = habitDto.Earnings,
 				UserId = CurrentUser.Id
 			};
 
 			WriteDbContext.Habits.Add(newHabit);
 			WriteDbContext.SaveChanges();
 
-			return Ok(new { message = "Habit created successfully", id = newHabit.Id });
+			return Ok(newHabit);
 		}
 	}
 }

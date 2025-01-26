@@ -53,11 +53,6 @@ public class Habit
             return false;
         }
 
-        if (date.Date > DateTime.UtcNow.Date)
-        {
-            return false;
-        }
-
         if(ABBoth)
         {
             var calendar = CultureInfo.CurrentCulture.Calendar;
@@ -92,7 +87,7 @@ public class Habit
 
     public static int GetHabitsDoneOnDay(List<Habit> habits, DateTime date)
     {
-        return habits.Where(h => h.HabitCheckedEvents.Any(e => e.TimeStamp?.Date == date.Date)).Count();
+        return habits.Where(h => h.HabitCheckedEvents.Any(e => e.TimeStamp.Date == date.Date)).Count();
     }
 
     public static List<Habit> GetHabitsToBeDoneOnDay(List<Habit> habits, DateTime date)
@@ -112,11 +107,24 @@ public class Habit
 
     public static int GetHabitsCompletionPercentage(List<Habit> habits, DateTime date)
     {
+        if(habits == null)
+        {
+            return 100;
+        }
+
         if(habits.Count == 0)
         {
             return 100;
         }
 
-        return (int)(GetHabitsDoneOnDay(habits, date) / GetHabitsToBeDoneOnDayCount(habits, date) * 100);
+        if(GetHabitsToBeDoneOnDayCount(habits, date) == 0)
+        {
+            return 100;
+        }
+         
+        float habitsDone = GetHabitsDoneOnDay(habits, date);
+        float habitsToBeDone = GetHabitsToBeDoneOnDayCount(habits, date);
+
+        return (int)((float)(habitsDone / habitsToBeDone * 100));
     }
 }

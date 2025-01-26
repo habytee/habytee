@@ -6,9 +6,9 @@ namespace habytee.Server.Controllers
 {
 	public partial class HabitController : BaseController
 	{
-		[HttpGet("{id}")]
+		[HttpGet("{habitId}")]
 		[ServiceFilter(typeof(HabitBelongsToUserFilter))]
-		public IActionResult GetHabit(int id)
+		public IActionResult GetHabit(int habitId)
 		{
 			return Ok(CurrentHabit);
 		}

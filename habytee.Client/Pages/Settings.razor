@@ -1,5 +1,9 @@
 @page "/settings"
+@using habytee.Client.ViewModels;
 
 <PageTitle>Settings</PageTitle>
 
-<RadzenAppearanceToggle @ref="appearanceToggle" />
+<RadzenCard>
+    <h3>Appearance</h3>
+    <RadzenAppearanceToggle @ref="appearanceToggle" Change="@(() => settingsViewModel?.OnThemeChanged())" />
+</RadzenCard>

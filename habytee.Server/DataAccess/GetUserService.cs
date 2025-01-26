@@ -2,7 +2,7 @@ using habytee.Interconnection.Models;
 
 namespace habytee.Server.DataAccess;
 
-public class DataService(ReadDbContext readDbContext, WriteDbContext writeDbContext) : IDataService
+public class GetUserService(ReadDbContext readDbContext, WriteDbContext writeDbContext) : IGetUserService
 {
     private readonly ReadDbContext readDbContext = readDbContext;
     private readonly WriteDbContext writeDbContext = writeDbContext;

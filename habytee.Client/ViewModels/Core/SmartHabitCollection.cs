@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using habytee.Client.Services;
 using habytee.Interconnection.Models;
+using Habytee.Interconnection.Dto;
 
 namespace habytee.Client.ViewModels;
 
@@ -32,11 +33,25 @@ public class SmartHabitCollection : ObservableCollection<Habit>
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                if (!await apiService.CreateHabitCheckedEventAsync(habit.Id))
+                var habitCheckedEvent = await apiService.CreateHabitCheckedEventAsync(habit.Id);
+                if (habitCheckedEvent == null)
                 {
                     isSyncing = true;
-                    habit.HabitCheckedEvents.RemoveAt(e.NewStartingIndex);
-                    isSyncing = false;
+                    try
+                    {
+                        if (e.NewStartingIndex < habit.HabitCheckedEvents.Count)
+                        {
+                            habit.HabitCheckedEvents.RemoveAt(e.NewStartingIndex);
+                        }
+                    }
+                    finally
+                    {
+                        isSyncing = false;
+                    }
+                }
+                else if (e.NewStartingIndex < habit.HabitCheckedEvents.Count)
+                {
+                    habit.HabitCheckedEvents[e.NewStartingIndex].Id = habitCheckedEvent.Id;
                 }
                 break;
 
@@ -63,11 +78,22 @@ public class SmartHabitCollection : ObservableCollection<Habit>
             case NotifyCollectionChangedAction.Add:
                 if (e.NewItems?[0] is Habit newHabit)
                 {
-                    if (!await apiService.CreateHabitAsync(newHabit))
+                    var habit = await apiService.CreateHabitAsync(CreateHabitDto.CreateCreateHabitDto(newHabit));
+                    if (habit == null)
                     {
                         isSyncing = true;
-                        Remove(newHabit);
-                        isSyncing = false;
+                        try
+                        {
+                            Remove(newHabit);
+                        }
+                        finally
+                        {
+                            isSyncing = false;
+                        }
+                    }
+                    else
+                    {
+                        newHabit.Id = habit.Id;
                     }
                 }
                 break;
@@ -78,8 +104,14 @@ public class SmartHabitCollection : ObservableCollection<Habit>
                     if (!await apiService.DeleteHabitAsync(oldHabit.Id))
                     {
                         isSyncing = true;
-                        Insert(e.OldStartingIndex, oldHabit);
-                        isSyncing = false;
+                        try
+                        {
+                            Insert(e.OldStartingIndex, oldHabit);
+                        }
+                        finally
+                        {
+                            isSyncing = false;
+                        }
                     }
                 }
                 break;
@@ -90,8 +122,14 @@ public class SmartHabitCollection : ObservableCollection<Habit>
                     if (!await apiService.UpdateHabitAsync(updatedHabit.Id, updatedHabit))
                     {
                         isSyncing = true;
-                        this[e.NewStartingIndex] = (Habit)e.OldItems![0]!;
-                        isSyncing = false;
+                        try
+                        {
+                            this[e.NewStartingIndex] = (Habit)e.OldItems![0]!;
+                        }
+                        finally
+                        {
+                            isSyncing = false;
+                        }
                     }
                 }
                 break;

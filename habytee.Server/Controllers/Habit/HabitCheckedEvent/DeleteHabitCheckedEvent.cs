@@ -16,7 +16,7 @@ namespace habytee.Server.Controllers
 			{
                 return NotFound("Habit checked event not found");
 			}
-			CurrentHabit.HabitCheckedEvents.Remove(eventToRemove);
+			WriteDbContext.HabitCheckedEvents.Remove(eventToRemove);
 			WriteDbContext.SaveChanges();
 
 			return Ok(new { message = "Habit checked event deleted successfully" });

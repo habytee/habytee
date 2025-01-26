@@ -7,9 +7,9 @@ namespace habytee.Server.Controllers
 {
 	public partial class HabitController : BaseController
 	{
-		[HttpPut("{id}")]
+		[HttpPut("{habitId}")]
 		[ServiceFilter(typeof(HabitBelongsToUserFilter))]
-		public IActionResult UpdateHabit(int id, [FromBody] Habit habit)
+		public IActionResult UpdateHabit(int habitId, [FromBody] Habit habit)
 		{
 			CurrentHabit!.Name = habit.Name;
 			CurrentHabit!.Reason = habit.Reason;

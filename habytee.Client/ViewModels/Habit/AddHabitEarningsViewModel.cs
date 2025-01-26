@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
-
 namespace habytee.Client.ViewModels;
 
 public class AddHabitEarningsViewModel : BaseViewModel

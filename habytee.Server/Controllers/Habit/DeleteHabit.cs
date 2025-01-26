@@ -6,9 +6,9 @@ namespace habytee.Server.Controllers
 {
 	public partial class HabitController : BaseController
 	{
-		[HttpDelete("{id}")]
+		[HttpDelete("{habitId}")]
         [ServiceFilter(typeof(HabitBelongsToUserFilter))]
-		public IActionResult DeleteHabit(int id)
+		public IActionResult DeleteHabit(int habitId)
 		{
 			WriteDbContext.Habits.Remove(CurrentHabit!);
 			WriteDbContext.SaveChanges();

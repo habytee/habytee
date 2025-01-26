@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddScoped<DataService>();
+builder.Services.AddScoped<GetUserService>();
 
 builder.Services.AddDbContext<ReadDbContext>(options =>
     //options.UseNpgsql($"Host={Environment.GetEnvironmentVariable("POSTGRES_WORKER_HOST")};Port={Environment.GetEnvironmentVariable("POSTGRES_WORKER_PORT")};Username={Environment.GetEnvironmentVariable("POSTGRES_WORKER_USERNAME")};Password={Environment.GetEnvironmentVariable("POSTGRES_WORKER_PASSWORD")};Database={Environment.GetEnvironmentVariable("POSTGRES_WORKER_DATABASE")}")

@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using habytee.Client.Core;
 
 namespace habytee.Client.ViewModels;
 

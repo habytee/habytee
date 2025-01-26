@@ -4,9 +4,9 @@
     <RadzenHeader>
         <div style="display: flex; align-items: center; justify-content: space-between; position: relative; padding-right: 10px;">
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-                <RadzenSidebarToggle Click="@(() => sidebarExpanded = !sidebarExpanded)" />
+                <RadzenSidebarToggle Click="@(() => ViewModel.SidebarExpanded = !ViewModel.SidebarExpanded)" />
                 <RadzenLabel Text="habytee" />
-                <RadzenLabel Text="0&nbsp;" style="margin-left: 15px;" />
+                <RadzenLabel Text="@($"{ViewModel.Coins}&nbsp;")" style="margin-left: 15px;" />
                 <span class="coin"></span>
             </RadzenStack>
             <RadzenMenu>
@@ -17,7 +17,7 @@
             </RadzenMenu>
         </div>
     </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@sidebarExpanded">
+    <RadzenSidebar @bind-Expanded="@ViewModel.SidebarExpanded">
         <RadzenPanelMenu>
             <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
             <RadzenPanelMenuItem Text="Add habit" Icon="add_box" Path="/create" />

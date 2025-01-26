@@ -9,11 +9,13 @@ RUN dotnet restore "habytee.Client/habytee.Client.csproj"
 
 COPY . .
 
-WORKDIR "/src/habytee.Interconnection"
-RUN dotnet build "habytee.Interconnection.csproj" -c Release -o /app/build
+#RUN dotnet workload install wasm-tools
 
-WORKDIR "/src/habytee.Client"
-RUN dotnet build "habytee.Client.csproj" -c Release -o /app/build
+#WORKDIR "/src/habytee.Interconnection"
+#RUN dotnet build "habytee.Interconnection.csproj" -c Release -o /app/build
+
+#WORKDIR "/src/habytee.Client"
+#RUN dotnet build "habytee.Client.csproj" -c Release -o /app/build
 
 WORKDIR "/src/habytee.Interconnection"
 RUN dotnet publish "habytee.Interconnection.csproj" -c Release -o /app/publish

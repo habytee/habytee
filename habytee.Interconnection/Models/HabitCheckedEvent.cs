@@ -12,7 +12,7 @@ public class HabitCheckedEvent
 	[JsonIgnore]
 	public Habit Habit { get; set; }  = null!;
 	
-	public DateTime? TimeStamp { get; set; }
+	public DateTime TimeStamp { get; set; } = DateTime.Now;
 
 	public HabitCheckedEvent()
 	{

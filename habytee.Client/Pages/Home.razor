@@ -29,7 +29,7 @@
                     <RadzenDataGridColumn TItem="HabitCheckable">
                         <Template Context="HabitCheckable">
                             <RadzenCheckBox @bind-Value="HabitCheckable.IsCompleted" 
-                                          Change="@((bool value) => homeRazorViewModel!.ToggleHabitCompletion(HabitCheckable))" />
+                                          Change="@(async (bool value) => await homeRazorViewModel!.ToggleHabitCompletionAsync(HabitCheckable))" />
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>

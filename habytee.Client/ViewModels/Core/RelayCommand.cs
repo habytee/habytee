@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace habytee.Client.Core;
+namespace habytee.Client.ViewModels;
 
 public class RelayCommand(Action execute, Func<bool>? canExecute = null) : ICommand
 {

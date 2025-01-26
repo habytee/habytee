@@ -3,8 +3,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using habytee.Client.Services;
-using habytee.Client.Core;
-using habytee.Interconnection.Models;
+using Habytee.Interconnection.Dto;
 
 namespace habytee.Client.ViewModels;
 
@@ -139,7 +138,7 @@ public class AddHabitViewModel : BaseViewModel
                     AllowSendToApi = false;
                     
                     var success = await apiService.CreateHabitAsync(
-                        new Habit{
+                        new CreateHabitDto{
                             Name = AddHabitNameViewModel.Name,
                             Reason = AddHabitReasonViewModel.Reason,
                             ABBoth = AddHabitDaysViewModel.ABActivated,
@@ -149,7 +148,7 @@ public class AddHabitViewModel : BaseViewModel
                             Earnings = AddHabitEarningsViewModel.Earnings
                         }
                     );
-                    if(success)
+                    if(success != null)
                     {
                         navigationManager?.NavigateTo("/");
                         AllowSendToApi = true;
