@@ -17,9 +17,9 @@ public class User
 
     public bool? LightTheme { get; set; }
 
-    public CultureInfo? Culture { get; set; }
+    public string? Language { get; set; }
 
-    public RegionInfo? Region { get; set; }
+    public string? Currency { get; set; }
 
     public User()
     {
