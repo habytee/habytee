@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using habytee.Interconnection.Models.Requests;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using habytee.Client.Services;
 using habytee.Client.Core;
+using habytee.Interconnection.Models;
 
 namespace habytee.Client.ViewModels;
 
@@ -138,8 +138,8 @@ public class AddHabitViewModel : BaseViewModel
                 {
                     AllowSendToApi = false;
                     
-                    var success = await apiService.SendHabitToApiAsync(
-                        new CreateHabitRequest{
+                    var success = await apiService.CreateHabitAsync(
+                        new Habit{
                             Name = AddHabitNameViewModel.Name,
                             Reason = AddHabitReasonViewModel.Reason,
                             ABBoth = AddHabitDaysViewModel.ABActivated,

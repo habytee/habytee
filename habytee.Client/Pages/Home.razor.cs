@@ -7,7 +7,7 @@ namespace habytee.Client.Pages;
 
 public partial class Home
 {
-    private HomeRazorViewModel? homeRazorViewModel;
+    private HomeViewModel? homeRazorViewModel;
     private RadzenChart? chart;
 
 	[Inject]
@@ -15,7 +15,7 @@ public partial class Home
 
     protected override void OnInitialized()
     {
-        homeRazorViewModel = new HomeRazorViewModel(apiService!);
+        homeRazorViewModel = new HomeViewModel(apiService!);
         homeRazorViewModel.DataLoaded += (s, e) => 
         {
             chart?.Reload();
