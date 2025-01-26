@@ -14,19 +14,25 @@ public class HomeViewModel : BaseViewModel
     public ObservableCollection<HabitCheckable> TomorrowTasks { get; set; } = new ObservableCollection<HabitCheckable>();
     public ObservableCollection<DayStatistic> DayStatistics { get; set; } = new ObservableCollection<DayStatistic>();
 	private IApiService ApiService { get; set; }
-    public SmartHabitCollection Habits { get; }
+    public SmartHabitCollection Habits { get; set; }
 
     public HomeViewModel(IApiService apiService)
     {
 		ApiService = apiService;
         Habits = new SmartHabitCollection(apiService);
-        _ = Habits.Refresh();
+        _ = InitializeAsync();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await Habits.Refresh();
         UpdateStats();
 
         FillTasks(YesterdayTasks, DateTime.Today.AddDays(-1));
         FillTasks(TodayTasks, DateTime.Today);
         FillTasks(TomorrowTasks, DateTime.Today.AddDays(1));
     }
+
 
 	private void FillTasks(ObservableCollection<HabitCheckable> tasks, DateTime date)
 	{
