@@ -5,5 +5,5 @@
 
 <RadzenCard>
     <h3>Appearance</h3>
-    <RadzenAppearanceToggle @ref="appearanceToggle" Change="@(() => settingsViewModel?.OnThemeChanged())" />
+    <RadzenAppearanceToggle @ref="appearanceToggle" Change="@(() => settingsViewModel?.OnThemeChanged(appearanceToggle?.LightTheme == "true"))" />
 </RadzenCard>

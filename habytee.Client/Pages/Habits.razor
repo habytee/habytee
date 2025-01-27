@@ -1,3 +1,29 @@
 @page "/habits"
+@using habytee.Client.ViewModels
 
 <PageTitle>Habits</PageTitle>
+
+<RadzenCard>
+    <RadzenRow>
+        @foreach (var habit in habitsViewModel.Habits)
+        {
+            <RadzenColumn Size="12" SizeMD="6" SizeLG="4">
+                <RadzenCard Style="margin-bottom: 20px;">
+                    <div class="habit-card-header">
+                        <h3>@habit.Name</h3>
+                        <RadzenButton Text="Delete" Click="@(async () => await habitsViewModel.DeleteHabitAsync(habit))" ButtonStyle="ButtonStyle.Danger" Icon="delete" Style="margin-left: auto;" />
+                    </div>
+                    <p><strong>Reason:</strong> @habit.Reason</p>
+                    <p><strong>Created On:</strong> @habit.CreationDate.ToString("MMMM dd, yyyy")</p>
+                    <p><strong>Earnings:</strong> @habit.Earnings</p>
+                    <p><strong>Alarm:</strong> @(habit.Alarm?.ToString("hh:mm tt") ?? "No Alarm Set")</p>
+                    <p><strong>Active Days:</strong> @string.Join(", ", habit.AWeekDays)</p>
+                    @if (habit.ABBoth)
+                    {
+                        <p><strong>B Week Days:</strong> @string.Join(", ", habit.BWeekDays)</p>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        }
+    </RadzenRow>
+</RadzenCard>

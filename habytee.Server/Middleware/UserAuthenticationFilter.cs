@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 public class UserAuthenticationFilter : IAsyncActionFilter
 {
-    private readonly IGetUserService getUserService;
+    private readonly GetUserService getUserService;
 
-    public UserAuthenticationFilter(IGetUserService getUserService)
+    public UserAuthenticationFilter(GetUserService getUserService)
     {
         this.getUserService = getUserService;
     }

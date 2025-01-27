@@ -53,6 +53,11 @@ public class Habit
             return false;
         }
 
+        if(HabitCheckedEvents.Where(hev => hev.TimeStamp.Date <= date.Date).Count() >= 30)//TODO: check if this is correct
+        {
+            return false;
+        }
+
         if(ABBoth)
         {
             var calendar = CultureInfo.CurrentCulture.Calendar;
@@ -126,5 +131,15 @@ public class Habit
         float habitsToBeDone = GetHabitsToBeDoneOnDayCount(habits, date);
 
         return (int)((float)(habitsDone / habitsToBeDone * 100));
+    }
+
+    public static int GetHabitsEarnings(List<Habit> habits, DateTime date)
+    {
+        int sum = 0;
+        foreach(var habit in habits)
+        {
+            sum += habit.Earnings * habit.HabitCheckedEvents.Where(hev => hev.TimeStamp.Date <= date.Date).Count();
+        }
+        return sum;
     }
 }

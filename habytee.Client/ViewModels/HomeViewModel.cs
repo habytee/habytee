@@ -2,7 +2,6 @@ using habytee.Client.Model;
 using habytee.Client.Services;
 using habytee.Interconnection.Models;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace habytee.Client.ViewModels;
 
@@ -11,17 +10,19 @@ public class HomeViewModel : BaseViewModel
     public event EventHandler? DataLoaded;
 
     private readonly SemaphoreSlim toggleSemaphore = new SemaphoreSlim(1, 1);
-
+    private readonly MainViewModel mainViewModel;
     public ObservableCollection<HabitCheckable> YesterdayTasks { get; set; } = new ObservableCollection<HabitCheckable>();
     public ObservableCollection<HabitCheckable> TodayTasks { get; set; } = new ObservableCollection<HabitCheckable>();
     public ObservableCollection<HabitCheckable> TomorrowTasks { get; set; } = new ObservableCollection<HabitCheckable>();
     public ObservableCollection<DayStatistic> DayStatistics { get; set; } = new ObservableCollection<DayStatistic>();
-	private IApiService ApiService { get; set; }
+	private ApiService apiService { get; set; }
     public SmartHabitCollection Habits { get; set; }
-
-    public HomeViewModel(IApiService apiService)
+    private readonly AnimationService animationService;
+    public HomeViewModel(ApiService apiService, MainViewModel mainViewModel, AnimationService animationService)
     {
-		ApiService = apiService;
+		this.apiService = apiService;
+        this.mainViewModel = mainViewModel;
+        this.animationService = animationService;
         Habits = new SmartHabitCollection(apiService);
         _ = InitializeAsync();
     }
@@ -65,6 +66,7 @@ public class HomeViewModel : BaseViewModel
                     if (eventToRemove != null)
                     {
                         habit.HabitCheckedEvents.Remove(eventToRemove);
+                        mainViewModel.Coins = Habit.GetHabitsEarnings(Habits.ToList(), DateTime.Today);
                     }
                 }
                 else
@@ -73,6 +75,7 @@ public class HomeViewModel : BaseViewModel
                     { 
                         TimeStamp = DateTime.Today.Date 
                     });
+                    mainViewModel.Coins = Habit.GetHabitsEarnings(Habits.ToList(), DateTime.Today);
                 }
                 
                 habitCheckable.IsCompleted = !habitCheckable.IsCompleted;

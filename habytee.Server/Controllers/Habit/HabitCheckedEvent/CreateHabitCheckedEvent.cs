@@ -17,12 +17,9 @@ namespace habytee.Server.Controllers
                 return BadRequest(new { message = "You already checked this habit today" });
             }
 
-            if(CurrentHabit!.HabitCheckedEvents.Count >= 29)
+            if(CurrentHabit!.HabitCheckedEvents.Count >= 30)
             {
-                WriteDbContext.Habits.Remove(CurrentHabit);
-                WriteDbContext.SaveChanges();
-                
-                return Ok(new { message = "You learned a new habit!" });
+                return BadRequest(new { message = "Cant check more than 30 times" });
             }
 
             var habitCheckedEvent = new HabitCheckedEvent

@@ -10,10 +10,17 @@
             <h3>Yesterday</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.YesterdayTasks" TItem="HabitCheckable">
                 <Columns>
-                    <RadzenDataGridColumn TItem="HabitCheckable" Property="Habit.Name"/>
                     <RadzenDataGridColumn TItem="HabitCheckable">
-                        <Template Context="HabitCheckable">
-                            <RadzenCheckBox @bind-Value="HabitCheckable.IsCompleted" Disabled="true" />
+                        <Template Context="habitCheckable">
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>@habitCheckable.Habit.Name</span>
+                                    <RadzenCheckBox @bind-Value="habitCheckable.IsCompleted" Disabled="true" />
+                                </div>
+                                <RadzenProgressBar Value="@(habitCheckable.Habit.HabitCheckedEvents.Count * 100 / 30)" 
+                                                 Style="width: 100%; margin-top: 5px;" 
+                                                 ShowValue="false" />
+                            </div>
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>
@@ -25,11 +32,18 @@
             <h3>Today</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.TodayTasks" TItem="HabitCheckable">
                 <Columns>
-                    <RadzenDataGridColumn TItem="HabitCheckable" Property="Habit.Name"/>
                     <RadzenDataGridColumn TItem="HabitCheckable">
-                        <Template Context="HabitCheckable">
-                            <RadzenCheckBox @bind-Value="HabitCheckable.IsCompleted" 
-                                          Change="@(async (bool value) => await homeRazorViewModel!.ToggleHabitCompletionAsync(HabitCheckable))" />
+                        <Template Context="habitCheckable">
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>@habitCheckable.Habit.Name</span>
+                                    <RadzenCheckBox @bind-Value="habitCheckable.IsCompleted" 
+                                                  Change="@(async (bool value) => await homeRazorViewModel!.ToggleHabitCompletionAsync(habitCheckable))" />
+                                </div>
+                                <RadzenProgressBar Value="@(habitCheckable.Habit.HabitCheckedEvents.Count * 100 / 30)" 
+                                                 Style="width: 100%; margin-top: 5px;" 
+                                                 ShowValue="false" />
+                            </div>
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>
@@ -41,10 +55,17 @@
             <h3>Tomorrow</h3>
             <RadzenDataGrid Data="@homeRazorViewModel?.TomorrowTasks" TItem="HabitCheckable">
                 <Columns>
-                    <RadzenDataGridColumn TItem="HabitCheckable" Property="Habit.Name"/>
                     <RadzenDataGridColumn TItem="HabitCheckable">
-                        <Template Context="HabitCheckable">
-                            <RadzenCheckBox @bind-Value="HabitCheckable.IsCompleted" Disabled="true" />
+                        <Template Context="habitCheckable">
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>@habitCheckable.Habit.Name</span>
+                                    <RadzenCheckBox @bind-Value="habitCheckable.IsCompleted" Disabled="true" />
+                                </div>
+                                <RadzenProgressBar Value="@(habitCheckable.Habit.HabitCheckedEvents.Count * 100 / 30)" 
+                                                 Style="width: 100%; margin-top: 5px;" 
+                                                 ShowValue="false" />
+                            </div>
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>

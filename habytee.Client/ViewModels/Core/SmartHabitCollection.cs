@@ -139,6 +139,7 @@ public class SmartHabitCollection : ObservableCollection<Habit>
     public async Task Refresh()
     {
         isSyncing = true;
+        CollectionChanged -= OnCollectionChanged;
         Clear();
         var habits = await apiService.GetAllHabitsAsync();
         if (habits != null)
@@ -148,6 +149,7 @@ public class SmartHabitCollection : ObservableCollection<Habit>
                 Add(habit);
             }
         }
+        CollectionChanged += OnCollectionChanged;
         isSyncing = false;
     }
 }

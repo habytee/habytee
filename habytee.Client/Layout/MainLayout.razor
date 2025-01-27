@@ -4,26 +4,26 @@
     <RadzenHeader>
         <div style="display: flex; align-items: center; justify-content: space-between; position: relative; padding-right: 10px;">
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-                <RadzenSidebarToggle Click="@(() => ViewModel.SidebarExpanded = !ViewModel.SidebarExpanded)" />
+                <RadzenSidebarToggle Click="@(() => mainViewModel.SidebarExpanded = !mainViewModel.SidebarExpanded)" />
                 <RadzenLabel Text="habytee" />
-                <RadzenLabel Text="@($"{ViewModel.Coins}&nbsp;")" style="margin-left: 15px;" />
+                <RadzenLabel Text="@($"{mainViewModel.Coins}\u00A0")" style="margin-left: 15px;" />
                 <span class="coin"></span>
             </RadzenStack>
-            <RadzenMenu>
-                <RadzenMenuItem Text="Profile" Icon="account_circle">
-                    <RadzenMenuItem Text="Settings" Path="/settings" Icon="settings"></RadzenMenuItem>
+            <RadzenMenu Responsive="false">
+                <RadzenMenuItem Text="@mainViewModel.Email" Icon="account_circle">
+                    <RadzenMenuItem Text="Settings" Path="/settings" Icon="settings" Click="@mainViewModel.ViewChanged"></RadzenMenuItem>
                     <RadzenMenuItem Text="Logout" Path="https://app.habytee.com/oauth2/sign_out?rd=https%3A%2F%2Fhabytee.com" Icon="logout"></RadzenMenuItem>
                 </RadzenMenuItem>
             </RadzenMenu>
         </div>
     </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@ViewModel.SidebarExpanded">
+    <RadzenSidebar @bind-Expanded="@mainViewModel.SidebarExpanded">
         <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" />
-            <RadzenPanelMenuItem Text="Add habit" Icon="add_box" Path="/create" />
-            <RadzenPanelMenuItem Text="Habits" Icon="psychiatry" Path="/habits" />
-            <RadzenPanelMenuItem Text="Add shop item" Icon="add_shopping_cart" Path="/add-shop-item" />
-            <RadzenPanelMenuItem Text="Shop" Icon="shopping_cart" Path="/shop" />
+            <RadzenPanelMenuItem Text="Home" Icon="home" Path="/" Click="@mainViewModel.SidebarClicked" />
+            <RadzenPanelMenuItem Text="Add habit" Icon="add_box" Path="/create" Click="@mainViewModel.SidebarClicked" />
+            <RadzenPanelMenuItem Text="Habits" Icon="psychiatry" Path="/habits" Click="@mainViewModel.SidebarClicked" />
+            <!-- <RadzenPanelMenuItem Text="Add shop item" Icon="add_shopping_cart" Path="/add-shop-item" Click="@mainViewModel.SidebarClicked" /> -->
+            <!-- <RadzenPanelMenuItem Text="Shop" Icon="shopping_cart" Path="/shop" Click="@mainViewModel.SidebarClicked" /> -->
             <RadzenPanelMenuItem Text="Logout" Icon="logout" Path="https://app.habytee.com/oauth2/sign_out?rd=https%3A%2F%2Fhabytee.com" />
         </RadzenPanelMenu>
     </RadzenSidebar>

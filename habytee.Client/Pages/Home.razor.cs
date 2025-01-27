@@ -13,9 +13,15 @@ public partial class Home
 	[Inject]
 	private ApiService? apiService {  get; set; }
 
+    [Inject]
+    private MainViewModel mainViewModel { get; set; } = default!;
+
+    [Inject]
+    private AnimationService animationService { get; set; } = default!;
+
     protected override void OnInitialized()
     {
-        homeRazorViewModel = new HomeViewModel(apiService!);
+        homeRazorViewModel = new HomeViewModel(apiService!, mainViewModel, animationService);
         homeRazorViewModel.DataLoaded += (s, e) => 
         {
             chart?.Reload();
